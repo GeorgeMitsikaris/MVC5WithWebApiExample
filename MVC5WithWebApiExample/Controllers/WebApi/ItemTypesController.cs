@@ -23,9 +23,9 @@ namespace MVC5WithWebApiExample.Controllers.WebApi
 
         // GET: api/ItemTypes/5
         [Route("search")]
-        public ItemType Get(string search)
+        public List<ItemType> Get(string search)
         {
-            var itemTypeName = _db.ItemTypes.FirstOrDefault(i => i.Name.Contains(search));
+            var itemTypeName = _db.ItemTypes.Where(i => i.Name.Contains(search)).ToList();
             return itemTypeName;
         }
 
@@ -43,14 +43,22 @@ namespace MVC5WithWebApiExample.Controllers.WebApi
         }
 
         // PUT: api/ItemTypes/5
-        [Route()]
+        [Route("{id:int}")]
         public void Put(int id, [FromBody]ItemType itemType)
         {
+            var itemTypeFromDb = _db.ItemTypes.FirstOrDefault(i => i.Id.Equals(id));
+            itemTypeFromDb.Code = itemType.Code;
+            itemTypeFromDb.Name = itemType.Name;
+            _db.SaveChanges();
         }
 
         // DELETE: api/ItemTypes/5
+        [Route("{id:int}")]
         public void Delete(int id)
         {
+            var itemType = _db.ItemTypes.FirstOrDefault(i => i.Id.Equals(id));
+            _db.ItemTypes.Remove(itemType);
+            _db.SaveChanges();
         }
     }
 }
