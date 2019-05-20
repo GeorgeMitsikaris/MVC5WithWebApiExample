@@ -21,11 +21,19 @@ namespace MVC5WithWebApiExample.Controllers.WebApi
             return itemTypes;
         }
 
-        // GET: api/ItemTypes/5
-        [Route("search")]
+        // GET: api/ItemTypes/abc
+        [Route("searchByName")]
         public List<ItemType> Get(string search)
         {
             var itemTypeName = _db.ItemTypes.Where(i => i.Name.Contains(search)).ToList();
+            return itemTypeName;
+        }
+
+        // GET: api/ItemTypes/5
+        [Route("searchByCode")]
+        public List<ItemType> Get(int search)
+        {
+            var itemTypeName = _db.ItemTypes.Where(i => i.Code.ToString().Contains(search.ToString())).ToList();
             return itemTypeName;
         }
 
