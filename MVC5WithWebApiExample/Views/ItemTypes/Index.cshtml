@@ -5,26 +5,71 @@
 
 
 <div class="container mt-3">
-    <div class="row offset-3 col-6">
-    <div class="m-auto display-4">Item Types</div>
-        <table id="tblItems" class="table table-striped text-center">
+    <div class="row">
+        <button class="btn btn-primary m-auto" data-toggle="modal" data-target="#insertModal">Create New</button>
+    </div>
+    <div class="row offset-2 col-8">
+        <div class="text-left display-4 m-auto">Item Types</div>
+        <table id="tblItems" class="table table-striped text-center mt-3">
             <thead>
                 <tr class="table-info">
-                    <td class="font-weight-bold">Code</td>
-                    <td class="font-weight-bold">Name</td>
+                    <td class="font-weight-bold">
+                        Code
+                        <div class="input-group-append">
+                            <input id="txtSearchCode" type="text" class="form-control" placeholder="Search Code" style="border-bottom-right-radius:0; border-top-right-radius:0" />
+                            <button id="searchCode" class="fa fa-search btn btn-light"></button>
+                        </div>
+                    </td>
+                    <td class="font-weight-bold">
+                        Name
+                        <div class="input-group-append">
+                            <input id="txtSearchName" type="text" class="form-control" placeholder="Search Name" style="border-bottom-right-radius:0; border-top-right-radius:0" />
+                            <button id="searchName" class="fa fa-search btn btn-light"></button>
+                        </div>
+                    </td>
                 </tr>
             </thead>
+            <tbody id="tblBody"></tbody>
         </table>
+    </div>
+</div>
+
+<div id="insertModal" class="modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Create Item Type</div>
+                <button class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="code">Code</label>
+                        <input type="text" id="code" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label for="name">Name</label>
+                        <input type="text" id="name" class="form-control" />
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button id="btnInsert" class="btn btn-info" data-dismiss="modal">Create</button>
+            </div>
+        </div>
     </div>
 </div>
 
 <script>
     $(document).ready(() => {
+
+        //Gets the ItemTypes after loading the page
+        //Get
         $.ajax({
             url: '/ItemTypes',
             method: 'GET',
             success: (response) => {
-                $.each(response, (ind,val) => {
+                $.each(response, (ind, val) => {
                     $('#tblItems').append(`
                         <tr>
                             <td>${val.Code}</td>
@@ -37,5 +82,76 @@
                 console.log(error);
             }
         })
+
+        // Inserts an ItemType
+        //Post
+        $('#btnInsert').click(() => {
+            const code = $('#code').val();
+            const name = $('#name').val();
+            $.ajax({
+                url: '/ItemTypes',
+                method: 'POST',
+                data: { Code: code, Name: name },
+                success: () => {
+                    $('#tblItems').append(`
+                        <tr>
+                            <td>${code}</td>
+                            <td>${name}</td>
+                        </tr>
+                    `)
+                }
+            })
+        })
+
+        //Searches ItemTypes by Code
+        //Get/search:int
+        $('#searchCode').click(() => {
+            const code = $('#txtSearchCode').val();
+            $.ajax({
+                url: '/ItemTypes/searchByCode',
+                method: 'GET',
+                data: { search: code },
+                success: (response) => {
+                    $('#tblItems').find("tr:gt(0)").remove();
+                    $.each(response, (ind, val) => {
+                        $('#tblItems').append(`
+                        <tr>
+                            <td>${val.Code}</td>
+                            <td>${val.Name}</td>
+                        </tr>
+                    `)
+                    })
+                },
+                error: (error) => {
+                    console.log(error);
+                }
+            })
+        })
+
+        //Searches ItemTypes by Name
+        //Get/search:string
+        $('#searchName').click(() => {
+            const code = $('#txtSearchName').val();
+            $.ajax({
+                url: '/ItemTypes/searchByName',
+                method: 'GET',
+                data: { search: code },
+                success: (response) => {
+                    $('#tblItems').find("tr:gt(0)").remove();
+                    $.each(response, (ind, val) => {
+                        $('#tblItems').append(`
+                        <tr>
+                            <td>${val.Code}</td>
+                            <td>${val.Name}</td>
+                        </tr>
+                    `)
+                    })
+                },
+                error: (error) => {
+                    console.log(error);
+                }
+            })
+        })
+
     })
 </script>
