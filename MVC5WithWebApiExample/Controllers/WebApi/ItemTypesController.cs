@@ -8,12 +8,12 @@ using System.Web.Http;
 
 namespace MVC5WithWebApiExample.Controllers.WebApi
 {
-    [RoutePrefix("itemtypes")]
+    [RoutePrefix("ItemTypes")]
     public class ItemTypesController : ApiController
     {
         ItemTypeDBContext _db = new ItemTypeDBContext();
 
-        // GET: api/ItemTypes
+        // GET: ItemTypes
         [Route("")]
         public IEnumerable<ItemType> Get()
         {
@@ -21,7 +21,15 @@ namespace MVC5WithWebApiExample.Controllers.WebApi
             return itemTypes;
         }
 
-        // GET: api/ItemTypes/abc
+        //Get: ItemTypes/1
+        [Route("findById")]
+        public ItemType GetItem(int id)
+        {
+            var itemType = _db.ItemTypes.Find(id);
+            return itemType;
+        }
+
+        // GET: ItemTypes/abc
         [Route("searchByName")]
         public List<ItemType> Get(string search)
         {
@@ -29,7 +37,7 @@ namespace MVC5WithWebApiExample.Controllers.WebApi
             return itemTypeName;
         }
 
-        // GET: api/ItemTypes/5
+        // GET: ItemTypes/5
         [Route("searchByCode")]
         public List<ItemType> Get(int search)
         {
@@ -37,7 +45,7 @@ namespace MVC5WithWebApiExample.Controllers.WebApi
             return itemTypeName;
         }
 
-        // POST: api/ItemTypes
+        // POST: ItemTypes
         [Route("")]
         public void Post([FromBody]ItemType itemType)
         {
@@ -50,7 +58,7 @@ namespace MVC5WithWebApiExample.Controllers.WebApi
             }
         }
 
-        // PUT: api/ItemTypes/5
+        // PUT: ItemTypes/5
         [Route("{id:int}")]
         public void Put(int id, [FromBody]ItemType itemType)
         {
@@ -60,7 +68,7 @@ namespace MVC5WithWebApiExample.Controllers.WebApi
             _db.SaveChanges();
         }
 
-        // DELETE: api/ItemTypes/5
+        // DELETE: ItemTypes/5
         [Route("{id:int}")]
         public void Delete(int id)
         {

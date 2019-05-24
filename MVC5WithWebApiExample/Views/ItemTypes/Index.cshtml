@@ -27,14 +27,15 @@
                             <button id="searchName" class="fa fa-search btn btn-light"></button>
                         </div>
                     </td>
+                    <td colspan="2" class="font-weight-bold">Actions</td>
                 </tr>
             </thead>
             <tbody id="tblBody"></tbody>
         </table>
     </div>
 </div>
-
-<div id="insertModal" class="modal">
+ 
+<div id="insertModal" class="modal fade">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -60,6 +61,32 @@
     </div>
 </div>
 
+<div id="editModal" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Edit Item Type</div>
+                <button class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="code">Code</label>
+                        <input type="text" id="codeToEdit" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label for="name">Name</label>
+                        <input type="text" id="nameToEdit" class="form-control" />
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button id="btnEditItem" class="btn btn-info" data-dismiss="modal">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
     $(document).ready(() => {
 
@@ -74,6 +101,12 @@
                         <tr>
                             <td>${val.Code}</td>
                             <td>${val.Name}</td>
+                            <td id="editId">
+                                <button type="button" onclick="editItem(this)" class="btn btn-dark mt-4" data-toggle="modal" data-target="#editModal" data-id="${val.Id}">Edit</button>
+                            </td>
+                            <td>
+                                <button id="btnDelete" type="button" class="btn btn-danger mt-4"><span class="fa fa-trash">&nbsp;Delete</span></button>
+                            </td>
                         </tr>
                     `)
                 })
@@ -153,5 +186,22 @@
             })
         })
 
+        //Edits ItemTypes
+        //PUT/id:number
     })
+    function editItem(val) {
+        const itemTypeId = $(val).attr('data-id');
+        $.ajax({
+            url: '/ItemTypes/findById',
+            method: 'GET',
+            data: { id: itemTypeId },
+            success: response => {
+                $('#codeToEdit').val(response.Code);
+                $('#nameToEdit').val(response.Name);
+            },
+            error: err => {
+                console.log(err);
+            }
+        })
+        }
 </script>
