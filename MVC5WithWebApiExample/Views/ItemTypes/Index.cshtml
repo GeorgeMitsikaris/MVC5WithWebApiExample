@@ -70,6 +70,7 @@
             </div>
             <div class="modal-body">
                 <form>
+                    <input id="idToEdit" type="hidden" />
                     <div class="form-group">
                         <label for="code">Code</label>
                         <input type="text" id="codeToEdit" class="form-control" />
@@ -88,33 +89,39 @@
 </div>
 
 <script>
+    const currentRow = null;
+
     $(document).ready(() => {
 
         //Gets the ItemTypes after loading the page
         //Get
-        $.ajax({
-            url: '/ItemTypes',
-            method: 'GET',
-            success: (response) => {
-                $.each(response, (ind, val) => {
-                    $('#tblItems').append(`
-                        <tr>
-                            <td>${val.Code}</td>
-                            <td>${val.Name}</td>
-                            <td id="editId">
-                                <button type="button" onclick="editItem(this)" class="btn btn-dark mt-4" data-toggle="modal" data-target="#editModal" data-id="${val.Id}">Edit</button>
-                            </td>
-                            <td>
-                                <button id="btnDelete" type="button" class="btn btn-danger mt-4"><span class="fa fa-trash">&nbsp;Delete</span></button>
-                            </td>
-                        </tr>
-                    `)
-                })
-            },
-            error: (error) => {
-                console.log(error);
-            }
-        })
+        function getItemTypes() {
+            $.ajax({
+                url: '/ItemTypes',
+                method: 'GET',
+                success: (response) => {
+                    $.each(response, (ind, val) => {
+                        $('#tblItems').append(`
+                            <tr>
+                                <td>${val.Code}</td>
+                                <td>${val.Name}</td>
+                                <td id="editId">
+                                    <button type="button" onclick="editItem(this)" class="btn btn-dark" data-toggle="modal" data-target="#editModal" data-id="${val.Id}">Edit</button>
+                                </td>
+                                <td>
+                                    <button id="btnDelete" type="button" class="btn btn-danger"><span class="fa fa-trash">&nbsp;Delete</span></button>
+                                </td>
+                            </tr>
+                        `)
+                    })
+                },
+                error: (error) => {
+                    console.log(error);
+                }
+            })
+        }
+
+        getItemTypes();
 
         // Inserts an ItemType
         //Post
@@ -186,22 +193,46 @@
             })
         })
 
-        //Edits ItemTypes
-        //PUT/id:number
-    })
-    function editItem(val) {
-        const itemTypeId = $(val).attr('data-id');
-        $.ajax({
-            url: '/ItemTypes/findById',
-            method: 'GET',
-            data: { id: itemTypeId },
-            success: response => {
-                $('#codeToEdit').val(response.Code);
-                $('#nameToEdit').val(response.Name);
-            },
-            error: err => {
-                console.log(err);
-            }
+
+        //Edits the ItemType
+        //PUT/id
+        $('#btnEditItem').click(() => {
+            const code = $('#codeToEdit').val();
+            const name = $('#nameToEdit').val();
+            const id = $('#idToEdit').val();
+            $.ajax({
+                url: '/ItemTypes/'+id,
+                method: 'PUT',
+                data: { Code: code, Name: name },
+                success: () => {
+                    $('#tblItems').find("tr:gt(0)").remove();
+                    getItemTypes();
+                },
+                error: (err) => {
+                    console.log(err);
+                }
+            })
+
         })
+
+    });
+
+        //Gets the ItemType to edit
+        //GET/id:number
+        function editItem(val) {
+            const itemTypeId = $(val).attr('data-id');
+            $.ajax({
+                url: '/ItemTypes/findById',
+                method: 'GET',
+                data: { id: itemTypeId },
+                success: response => {
+                    $('#codeToEdit').val(response.Code);
+                    $('#nameToEdit').val(response.Name);
+                    $('#idToEdit').val(response.Id);
+                },
+                error: err => {
+                    console.log(err);
+                }
+            })
         }
 </script>
