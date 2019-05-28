@@ -44,6 +44,7 @@
             </div>
             <div class="modal-body">
                 <form>
+                    <input type="hidden" id="itemId" />
                     <div class="form-group">
                         <label for="code">Code</label>
                         <input type="text" id="code" class="form-control" />
@@ -132,7 +133,7 @@
                             <tr>
                                 <td>${val.Code}</td>
                                 <td>${val.Name}</td>
-                                <td id="editId">
+                                <td>
                                     <button type="button" onclick="editItem(this)" class="btn btn-dark" data-toggle="modal" data-target="#editModal" data-id="${val.Id}">Edit</button>
                                 </td>
                                 <td>
@@ -155,6 +156,7 @@
         $('#btnInsert').click(() => {
             const code = $('#code').val();
             const name = $('#name').val();
+            const id = $('#itemId').val();
             $.ajax({
                 url: '/ItemTypes',
                 method: 'POST',
@@ -164,8 +166,16 @@
                         <tr>
                             <td>${code}</td>
                             <td>${name}</td>
+                            <td>
+                                <button type="button" onclick="editItem(this)" class="btn btn-dark" data-toggle="modal" data-target="#editModal" data-id="${id}">Edit</button>
+                            </td>
+                            <td>
+                                <button type="button" onclick="deleteItem(this)" class="btn btn-danger" data-toggle="modal" data-target="#deleteModal" data-id="${id}">Delete</button>
+                            </td>
                         </tr>
                     `)
+                    $('#code').val('');
+                    $('#name').val('');
                 }
             })
         })
@@ -185,6 +195,12 @@
                         <tr>
                             <td>${val.Code}</td>
                             <td>${val.Name}</td>
+                            <td>
+                                <button type="button" onclick="editItem(this)" class="btn btn-dark" data-toggle="modal" data-target="#editModal" data-id="${val.Id}">Edit</button>
+                            </td>
+                            <td>
+                                <button type="button" onclick="deleteItem(this)" class="btn btn-danger" data-toggle="modal" data-target="#deleteModal" data-id="${val.Id}">Delete</button>
+                            </td>
                         </tr>
                     `)
                     })
@@ -242,6 +258,23 @@
 
         })
 
+        //Deletes the ItemType
+        //DELETE/id
+        $('#btnDeleteItem').click(() => {
+            const id = $('#idToDelete').val();
+            $.ajax({
+                url: '/ItemTypes/' + id,
+                method: 'DELETE',
+                success: () => {
+                    $('#tblItems').find("tr:gt(0)").remove();
+                    getItemTypes();
+                },
+                error: (err) => {
+                    console.log(err);
+                }
+            })
+        })
+
     });
 
     //Gets the ItemType to edit
@@ -262,7 +295,9 @@
             }
         })
     }
-
+    
+    //Gets the ItemType to delete
+    //GET/id:number
     function deleteItem(val) {
         const itemTypeId = $(val).attr('data-id');
         $.ajax({
