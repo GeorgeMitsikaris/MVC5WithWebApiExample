@@ -14,14 +14,16 @@
             <thead>
                 <tr class="table-info">
                     <td class="font-weight-bold">
-                        Code
+                        <button id="sortByCode" class="btn btn-block btn-warning">
+                            <p class="pr-3 d-inline">Code</p><span class="fa fa-arrow-up pr-1"></span><span class="fa fa-arrow-down"></span>
+                        </button>
                         <div class="input-group-append">
                             <input id="txtSearchCode" type="text" class="form-control" placeholder="Search Code" style="border-bottom-right-radius:0; border-top-right-radius:0" />
                             <button id="searchCode" class="fa fa-search btn btn-light"></button>
                         </div>
                     </td>
                     <td class="font-weight-bold">
-                        Name
+                        <button id="sortByName" class="btn btn-block btn-warning mr-3"><p class="pr-3 d-inline">Name</p><span class="fa fa-arrow-up pr-1"></span><span class="fa fa-arrow-down"></span></button>
                         <div class="input-group-append">
                             <input id="txtSearchName" type="text" class="form-control" placeholder="Search Name" style="border-bottom-right-radius:0; border-top-right-radius:0" />
                             <button id="searchName" class="fa fa-search btn btn-light"></button>
@@ -226,6 +228,12 @@
                         <tr>
                             <td>${val.Code}</td>
                             <td>${val.Name}</td>
+                            <td>
+                                <button type="button" onclick="editItem(this)" class="btn btn-dark" data-toggle="modal" data-target="#editModal" data-id="${val.Id}">Edit</button>
+                            </td>
+                            <td>
+                                <button type="button" onclick="deleteItem(this)" class="btn btn-danger" data-toggle="modal" data-target="#deleteModal" data-id="${val.Id}">Delete</button>
+                            </td>
                         </tr>
                     `)
                     })
@@ -236,6 +244,38 @@
             })
         })
 
+        //Sorts ItemTypes by Code
+        //GET/orderByCode
+        let sort = 'asc'
+        $("#sortByCode").click(() => {
+            $.ajax({
+                url: `/ItemTypes/orderByCode?sort=${sort}`,
+                method: 'GET',
+                success: (response) => {
+                    $('#tblItems').find("tr:gt(0)").remove();
+                    $.each(response, (ind, val) => {
+                        $('#tblItems').append(`
+                            <tr>
+                                <td>${val.Code}</td>
+                                <td>${val.Name}</td>
+                                <td>
+                                    <button type="button" onclick="editItem(this)" class="btn btn-dark" data-toggle="modal" data-target="#editModal" data-id="${val.Id}">Edit</button>
+                                </td>
+                                <td>
+                                    <button type="button" onclick="deleteItem(this)" class="btn btn-danger" data-toggle="modal" data-target="#deleteModal" data-id="${val.Id}">Delete</button>
+                                </td>
+                            </tr>
+                        `)
+                    })
+                    if (sort === 'asc') {
+                        sort = 'desc';
+                    }
+                    else {
+                        sort = 'asc';
+                    }
+                }
+            })
+        })
 
         //Edits the ItemType
         //PUT/id
@@ -274,7 +314,6 @@
                 }
             })
         })
-
     });
 
     //Gets the ItemType to edit
@@ -295,7 +334,7 @@
             }
         })
     }
-    
+
     //Gets the ItemType to delete
     //GET/id:number
     function deleteItem(val) {
@@ -312,6 +351,26 @@
             error: err => {
                 console.log(err);
             }
+        })
+    }
+
+    //Help function for regenerating table with data
+
+    function BuildTable() {
+        $('#tblItems').find("tr:gt(0)").remove();
+        $.each(response, (ind, val) => {
+            $('#tblItems').append(`
+                <tr>
+                    <td>${val.Code}</td>
+                    <td>${val.Name}</td>
+                    <td>
+                        <button type="button" onclick="editItem(this)" class="btn btn-dark" data-toggle="modal" data-target="#editModal" data-id="${val.Id}">Edit</button>
+                    </td>
+                    <td>
+                        <button type="button" onclick="deleteItem(this)" class="btn btn-danger" data-toggle="modal" data-target="#deleteModal" data-id="${val.Id}">Delete</button>
+                    </td>
+                </tr>
+            `)
         })
     }
 </script>

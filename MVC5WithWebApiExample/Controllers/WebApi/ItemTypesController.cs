@@ -45,6 +45,34 @@ namespace MVC5WithWebApiExample.Controllers.WebApi
             return itemTypeName;
         }
 
+        // GET: ItemTypes/orderByCode
+        [Route("orderByCode")]
+        public List<ItemType> GetSortedByCode([FromUri]string sort)
+        {
+            var itemTypes = _db.ItemTypes.ToList();
+
+            if (sort == "asc")
+                itemTypes = itemTypes.OrderBy(i => i.Code).ToList();
+            else if (sort == "desc")
+                itemTypes = itemTypes.OrderByDescending(i => i.Code).ToList();
+
+            return itemTypes;
+        }
+
+        // GET: ItemTypes/orderByName
+        [Route("orderByName")]
+        public List<ItemType> GetSortedByName([FromUri]string sort)
+        {
+            var itemTypes = _db.ItemTypes.ToList();
+
+            if (sort == "asc")
+                itemTypes = itemTypes.OrderBy(i => i.Name).ToList();
+            else if (sort == "desc")
+                itemTypes = itemTypes.OrderByDescending(i => i.Name).ToList();
+
+            return itemTypes;
+        }
+
         // POST: ItemTypes
         [Route("")]
         public void Post([FromBody]ItemType itemType)
